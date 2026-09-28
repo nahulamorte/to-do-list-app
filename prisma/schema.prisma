@@ -1,0 +1,17 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // En tu .env11: DATABASE_URL="file:./dev.db"
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?  // El signo de interrogación lo hace opcional (nullable)
+  isCompleted Boolean  @default(false)
+}
