@@ -13,8 +13,17 @@ export class TasksService {
     });
   }
 
-  findAll() {
-    return this.prisma.task.findMany();
+  findAll(completed?: string) {
+    let isCompletedFilter: boolean | undefined = undefined;
+
+    if (completed === 'true') isCompletedFilter = true;
+    if (completed === 'false') isCompletedFilter = false;
+
+    return this.prisma.task.findMany({
+      where: {
+        isCompleted: isCompletedFilter,
+      },
+    });
   }
 
   async findOne(id: number) {
@@ -42,4 +51,5 @@ export class TasksService {
 
     return this.prisma.task.delete({ where: { id: id } });
   }
+
 }
