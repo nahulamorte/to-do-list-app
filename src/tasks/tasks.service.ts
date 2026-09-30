@@ -8,8 +8,16 @@ export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createTaskDto: CreateTaskDto) {
+// Extraemos el userId y agrupamos el resto de las propiedades en taskData
+    const { userId, ...taskData } = createTaskDto;
+
     return this.prisma.task.create({
-      data: createTaskDto,
+      data: {
+        ...taskData,
+        user: {
+          connect: { id: userId }
+        }
+      },
     });
   }
 
