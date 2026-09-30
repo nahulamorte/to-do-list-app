@@ -11,7 +11,4 @@ export class CreateTaskDto {
   @MinLength(10)
   description: string;
 
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
 }
