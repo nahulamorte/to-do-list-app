@@ -16,7 +16,7 @@ export class TasksService {
     });
   }
 
-  findAll(completed?: string) {
+  async findAll(userId: number, completed?: string) {
     let isCompletedFilter: boolean | undefined = undefined;
 
     if (completed === 'true') isCompletedFilter = true;
@@ -24,24 +24,31 @@ export class TasksService {
 
     return this.prisma.task.findMany({
       where: {
+        userId: userId,
         isCompleted: isCompletedFilter,
       },
     });
   }
 
-  async findOne(id: number) {
-    const task = await this.prisma.task.findUnique({
-      where: { id: id },
+  async findOne(id: number, userId: number) {
+    const task = await this.prisma.task.findFirst({
+      where: {
+        id: id,
+        userId: userId, // Condición clave de seguridad
+      },
     });
 
     if (!task) {
-      throw new NotFoundException('Tarea no encontrada'); // NotFoundException se importa de @nestjs/common
+      throw new NotFoundException(
+        `Tarea con ID ${id} no encontrada o no te pertenece`,
+      );
     }
+
     return task;
   }
 
-  async update(id: number, updateTaskDto: UpdateTaskDto) {
-    await this.findOne(id);
+  async update(id: number, updateTaskDto: UpdateTaskDto, userId: number) {
+    await this.findOne(id, userId);
 
     return this.prisma.task.update({
       where: { id },
@@ -49,9 +56,11 @@ export class TasksService {
     });
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
+  async remove(id: number, userId: number) {
+    await this.findOne(id, userId);
 
-    return this.prisma.task.delete({ where: { id: id } });
+    return this.prisma.task.delete({
+      where: { id },
+    });
   }
 }

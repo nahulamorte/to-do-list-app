@@ -27,22 +27,30 @@ export class TasksController {
   }
 
   @Get()
-  findAll(@Query('completed') completed?: string) {
-    return this.tasksService.findAll(completed);
+  findAll(@Request() req: any, @Query('completed') completed?: string) {
+    const userId = req.user.sub;
+    return this.tasksService.findAll(userId, completed);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req: any) {
+    const userId = req.user.sub;
+    return this.tasksService.findOne(+id, userId); // Pasamos ambos IDs
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.tasksService.update(+id, updateTaskDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateTaskDto: UpdateTaskDto,
+    @Request() req: any,
+  ) {
+    const userId = req.user.sub;
+    return this.tasksService.update(+id, updateTaskDto, userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tasksService.remove(+id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    const userId = req.user.sub;
+    return this.tasksService.remove(+id, userId);
   }
 }
